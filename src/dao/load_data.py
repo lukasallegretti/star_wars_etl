@@ -102,7 +102,7 @@ def upload_s3_file(table: str):
     s3_client = boto3.client(
         's3',
         aws_access_key_id="",
-	    aws_secret_access_key="+99n6iDXwCoaY"
+	    aws_secret_access_key=""
     )
     pg_conn = DbConn()
     LOGGER.info('Geting data from database')
