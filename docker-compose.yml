@@ -1,0 +1,58 @@
+version: '3.7'
+services: 
+    postgres:
+        build:
+            context: ./postgres/
+
+    pgadmin:
+        image: dpage/pgadmin4
+
+        environment:
+            - PGADMIN_DEFAULT_EMAIL=test@test.test
+            - PGADMIN_DEFAULT_PASSWORD=dontuseweakpasswords
+            - PGADMIN_SERVER_JSON_FILE=/servers/servers.json
+        
+        volumes:
+            - ./pgadmin4/servers/
+        
+        ports:
+            - "8181:80"
+        
+    webserver:
+        build:
+            context: ./
+            dockerfile: Dockerfile
+        
+        environment:
+            - FERNET_KEY=0mG1PNypkGTPtpf1w6lUqxF4ZP5kIZfKhbrnsXDQ3UI=
+
+            - POSTGRES_HOST=postgres
+            - POSTGRES_USER=postgres
+            - POSTGRES_PASSWORD=postgres
+            - AIRFLOW_DB=airflow_db
+
+            - DEFAULT_CONN_DB=postgres
+            - PG_CONN_ID=pg_default
+        
+        restart: always
+
+        logging:
+            options:
+                max-size: 10m
+                max-file: "3"
+                
+        ports:
+            - "8080:8080"
+
+        command: webserver
+
+        volumes: 
+            - ./dags:/opt/airflow/dags
+    
+    api-star-wars:
+        build:
+            context: ./src/
+            dockerfile: Dockerfile
+        
+        ports:
+            - "5000:5000"
